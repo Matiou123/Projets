@@ -35,26 +35,26 @@ def créer_prisme(x, y, z):
         flatshading=True
     )
 
-# Chiffre à représenter
-test = pd.read_csv("exemple_7.csv", index_col=0).to_numpy()
+def afficher_chiffre3D(chiffre, sauve = False, titre="Exemple.html"):
 
-# Créer tous les prismes
-prismes = []
-for i in range(test.shape[0]):
-    for j in range(test.shape[1]):
-        if test[i, j] > 0:
-            prismes.append(créer_prisme(i, j, test[i, j]))
+    # Créer tous les prismes
+    prismes = []
+    for i in range(chiffre.shape[0]):
+        for j in range(chiffre.shape[1]):
+            if chiffre[i, j] > 0:
+                prismes.append(créer_prisme(i, j, chiffre[i, j]))
 
 
-fig = go.Figure(data=prismes)
+    fig = go.Figure(data=prismes)
 
-fig.update_layout(
-    scene=dict(
-        xaxis=dict(range=[0, test.shape[0]], title='x'),
-        yaxis=dict(range=[0, test.shape[1]], title='y'),
-        zaxis=dict(range=[0, np.max(test)+0.5], title='hauteur'),
-        aspectmode="data"
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(range=[0, chiffre.shape[0]], title='x'),
+            yaxis=dict(range=[0, chiffre.shape[1]], title='y'),
+            zaxis=dict(range=[0, 1.5], title='hauteur'),
+            aspectmode="data"
+        )
     )
-)
-# fig.write_html("exemple_7_3d.html")
-fig.show()
+    if sauve:
+        fig.write_html(titre)
+    fig.show()
