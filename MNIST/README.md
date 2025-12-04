@@ -1,3 +1,3 @@
-# Chiffre reprsésenté tridimensionnelement
+# Chiffre représenté tridimensionnelement
 
 # Contour des chiffres
