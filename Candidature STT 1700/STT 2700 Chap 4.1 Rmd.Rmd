@@ -1,0 +1,156 @@
+---
+title: "STT 2700"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Chapitre 4 Tests d'hypothèses
+
+## 4.1 Introduction
+
+### Exemple avec pile ou face
+
+```{r}
+p0 <- dbinom(0:10,10,.5)
+p1 <- dbinom(0:10,10,.7)
+round(p0,digits=4)
+```
+
+```{r}
+# Diviser la fenêtre graphique en 1 ligne x 2 colonnes
+par(mfrow = c(1, 2))  # 1 ligne, 2 colonnes
+
+# Graphique 1
+plot(0:10, p0,
+     col = "blue",
+     pch = 19,
+     xlab = "",
+     main = "Proba 0.5")
+lines(0:10, p0, col = "blue", lwd = 2) 
+# Graphique 2
+plot(0:10, p1,
+     col = "red",
+     pch = 19,
+     xlab = "",
+     main = "Proba 0.7")
+lines(0:10, p1, col = "red", lwd = 2) 
+```
+
+```{r}
+par(mfrow = c(1, 2))  # 1 ligne, 2 colonnes
+
+# Graphique 1
+plot(0:10, p0,
+     type = "l",
+     col = "blue",
+     pch = 19,
+     xlab = "",
+     main = "Proba 0.5")
+
+# Graphique 2
+plot(0:10, p1,
+     type = "l",
+     lwd= 3,
+     col = "red",
+     pch = 19,
+     xlab = "",
+     main = "Proba 0.7")
+```
+
+```{r}
+par(mfrow = c(1, 2))  # 1 ligne, 2 colonnes
+
+# Graphique 1
+plot(0:10, p0,
+     type = "h",
+     col = "blue",
+     lwd = 10,
+     xlab = "",
+     main = "Proba 0.5")
+
+# Graphique 2
+plot(0:10, p1,
+     type = "h",
+     col = "red",
+     pch = 19,
+     lwd = 10,
+     xlab = "",
+     main = "Proba 0.7")
+
+```
+
+Si on obtient un certain résultat et que nous voulions décider qu'elle probabilité est la plus vraisemblable. On peut faire le rapport de vraisemblance
+
+```{r}
+round(dbinom(0:10,10,.5)/dbinom(0:10,10,.7),digits=3)
+```
+
+```{r}
+
+rapp_vrai1 <- round(dbinom(0:10,10,.7)/dbinom(0:10,10,.5),digits=3)
+rapp_vrai0 <- round(dbinom(0:10,10,.5)/dbinom(0:10,10,.7),digits=3)
+rapp_vrai <- rapp_vrai0/(rapp_vrai0+rapp_vrai1)
+plot(0:10,
+     rapp_vrai,
+     type="h",
+     lwd=10,
+     col="magenta",
+     xlab="Nombre de succès",
+     ylab = "Probabilité de vraisemblance",
+     ylim = c(0,1.1),
+     ,main="Probabilité que p = 0.5"
+     ,yaxt="n"
+     ,xaxt="n",  # supprime l'axe X par défaut
+     )
+
+# Ajouter l’axe X avec ticks de 0 à 10
+axis(side=1, at=0:10, labels=0:10)
+
+# Axe des ordonnées (ticks de 0 à 1 par pas de 0.1)
+axis(side=2, at=seq(0,1,0.25), labels=seq(0,1,0.25))
+
+# Ajouter les valeurs au-dessus des bâtons
+text(x = 0:10,
+     y = rapp_vrai + 0.1,   # petit décalage vers le haut
+     labels = round(rapp_vrai,3),      # valeurs à afficher
+     cex = 0.8,                        # taille du texte
+     col = "blue")                     # couleur
+
+```
+
+```{r}
+rapp_vrai <- rapp_vrai1/(rapp_vrai0+rapp_vrai1)
+
+# Augmenter la marge de droite (mar = c(bottom, left, top, right))
+par(mar=c(5,4,4,5)) 
+
+plot(0:10,
+     rapp_vrai,
+     type="h",
+     ylim=c(0,1.1),
+     lwd=10,
+     xlab="Nombre de succès",
+     ylab = "",
+     col="magenta"
+     ,main="Probabilité que p = 0.7",
+     xaxt="n",
+     yaxt="n"
+     )
+
+axis(side=1,at = 0:10, labels = 0:10)
+# Ajouter le ylab à droite
+mtext("Probabilité de vraisemblance", side=4, line=3)
+# Axe des ordonnées (ticks de 0 à 1 par pas de 0.1)
+axis(side=4, at=seq(0,1,0.25), labels=seq(0,1,0.25))
+
+
+
+      
+# Ajouter les valeurs au-dessus des bâtons
+text(x = 0:10,
+     y = rapp_vrai + 0.1,   # petit décalage vers le haut
+     labels = round(rapp_vrai,3),      # valeurs à afficher
+     cex = 0.8,                        # taille du texte
+     col = "red") 
+```
