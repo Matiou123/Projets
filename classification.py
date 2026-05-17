@@ -1,4 +1,4 @@
-"""Rouler fait une boucle d'entraînement de 100 époques avec le dataset `FashionMNIST` et un modèle Lerp linéaire de hauteur 3"""
+"""Rouler fait une boucle d'entraînement de 100 époques avec le jeu de données `FashionMNIST` et un modèle Lerp linéaire de hauteur 3"""
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
@@ -6,17 +6,17 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 
 transform = transforms.Compose([transforms.ToTensor()])
-mnist = datasets.FashionMNIST(root="./data", train=True, download=True, transform=transform)
-mnist_test = datasets.FashionMNIST(root="./data", train=True, download=True, transform=transform)
+FashionMNIST_train = datasets.FashionMNIST(root="./data", train=True, download=True, transform=transform)
+FashionMNIST_test = datasets.FashionMNIST(root="./data", train=True, download=True, transform=transform)
 
 
-loader = DataLoader(mnist, batch_size= 512, shuffle = True)
-loader_test = DataLoader(mnist_test, batch_size= 64, shuffle = True)
+loader = DataLoader(FashionMNIST_train, batch_size= 512, shuffle = True)
+loader_test = DataLoader(FashionMNIST_test, batch_size= 64, shuffle = True)
         
 
 class Lerping(nn.Module):
     
-    """Prend deux `nn.Module` et fait une combinaison convexe avec paramètre `alpha` appris
+    """Prend deux `nn.Linear` et fait une combinaison convexe avec paramètre `alpha` apprenable.
     ### Arguments
     - m1 : Premier module
     - m2 : Second module
@@ -81,7 +81,7 @@ class Modèle(nn.Module):
 
 
     def forward(self, x):
-        x = x.flatten(start_dim=1)
+        x = x.flatten(start_dim=1) 
         x1 = self.lerp1(x)
         x2 = self.lerp2(x)
         x3 = self.lerp3(x)
@@ -95,94 +95,94 @@ from tqdm import tqdm
 import os
 os.makedirs("sample", exist_ok=True)
 
-def train(n_epoch=100):
+def train(n_époque=100):
 
     modèle = Modèle()
     critère = nn.CrossEntropyLoss()
     optimiseur = torch.optim.AdamW(modèle.parameters(), lr=5e-4)
 
     def train_step(batch):
-        images, labels = batch
+        images, tags = batch
 
         logits = modèle(images)
 
-        perte = critère(logits, labels)
+        perte = critère(logits, tags)
 
         optimiseur.zero_grad()
         perte.backward()
         optimiseur.step()
 
-        pred = torch.argmax(logits, dim=1)
-        bonnes_pred = (pred == labels).sum().item()
+        prédictions = torch.argmax(logits, dim=1)
+        bonnes_prédictions = (prédictions == tags).sum().item()
 
-        return perte.item(), bonnes_pred, labels.size(0)
+        return perte.item(), bonnes_prédictions, tags.size(0)
 
-    bar_epoch = tqdm(range(n_epoch), desc='Entraînement', leave=True)
+    barre_époque = tqdm(range(n_époque), desc='Entraînement', leave=True)
     
-    for epoch in bar_epoch:
-        batches = tqdm(loader, desc=f"Époque {epoch + 1}", leave=False)
+    for époque in barre_époque:
+        batches = tqdm(loader, desc=f"Époque {époque + 1}", leave=False)
 
         perte_total = 0
         bonnes_total = 0
         total = 0
 
         for batch in batches:
-            perte_batch, bonnes_pred, n = train_step(batch)
+            perte_batch, bonnes_prédictions, n = train_step(batch)
 
             perte_total += perte_batch
-            bonnes_total += bonnes_pred
+            bonnes_total += bonnes_prédictions
             total += n
 
             batches.set_postfix({
                 "Perte lot": f"{perte_batch:.6f}",
-                "Acc lot": f"{bonnes_pred/n:.4f}"
+                "Acc lot": f"{bonnes_prédictions/n:.4f}"
             })
 
         perte_train = perte_total/len(loader)
-        acc_train = bonnes_total/total
+        précision_train = bonnes_total/total
         
-        bar_epoch.set_postfix({
+        barre_époque.set_postfix({
             "Perte époque": f"{perte_train:.6f}",
-            "Acc époque": f"{acc_train:.4f}"
+            "Acc époque": f"{précision_train:.4f}"
         })
         
         with torch.no_grad():
-            test = tqdm(loader_test, desc=f"Val {epoch + 1}", leave= False)
+            test = tqdm(loader_test, desc=f"Val {époque + 1}", leave= False)
 
             perte_total = 0
             bonnes_total = 0
             total = 0
 
             for batch in test:
-                images, labels = batch
+                images, tags = batch
 
                 logits = modèle(images)
-                perte = critère(logits, labels)
+                perte = critère(logits, tags)
 
                 perte_total += perte.item()
 
-                pred = torch.argmax(logits, dim=1)
-                bonnes = (pred == labels).sum().item()
+                prédictions = torch.argmax(logits, dim=1)
+                bonnes = (prédictions == tags).sum().item()
 
                 bonnes_total += bonnes
-                total += labels.size(0)
+                total += tags.size(0)
 
                 test.set_postfix({
                     "perte val": f"{perte.item():.6f}",
-                    "acc val": f"{bonnes / labels.size(0):.4f}"
+                    "acc val": f"{bonnes / tags.size(0):.4f}"
                 })
 
             perte_val = perte_total / len(loader_test)
             acc_val = bonnes_total / total
             
-            bar_epoch.set_postfix({
+            barre_époque.set_postfix({
                 "Perte val": f"{perte_val:.6f}",
                 "Acc val": f"{acc_val:.4f}"
             })
 
             tqdm.write(
-            f"Époque {epoch + 1:>3}/{n_epoch}"
-            f"  │  perte train: {perte_train:.4f}  acc train: {acc_train:.4f}"
+            f"Époque {époque + 1:>3}/{n_époque}"
+            f"  │  perte train: {perte_train:.4f}  acc train: {précision_train:.4f}"
             f"  │  perte val:   {perte_val:.4f}  acc val:   {acc_val:.4f}"
         )   
             fig, axes = plt.subplots(2, 5, figsize = (12,8))
@@ -193,18 +193,18 @@ def train(n_epoch=100):
                 img = batch[i]
 
                 logits = modèle(img.unsqueeze(0)).squeeze(0)
-                pred = torch.argmax(logits).item()
+                prédictions = torch.argmax(logits).item()
 
                 img_np = img.permute(1, 2, 0).detach()
 
-                axes[i//5, i%5].set_title(f"Pred : {str(pred)}   Vrai: {tags[i].squeeze().item()}")
+                axes[i//5, i%5].set_title(f"prédictions : {str(prédictions)}   Vrai: {tags[i].squeeze().item()}")
                 axes[i//5, i%5].imshow(img_np, cmap='gray')
                 axes[i//5, i%5].axis('off')
 
-            plt.savefig(f"./sample/sample_{epoch + 1}")
+            plt.savefig(f"./sample/sample_{époque + 1}")
             plt.close()
                 
-    torch.save(modèle.state_dict(), "modèle_lerpLinéaire_FashionMNIST.pth")
+    torch.save(modèle.state_dict(), "checkpoint_FashionMNIST.pth")
     
 
 train()      
