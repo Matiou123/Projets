@@ -17,7 +17,7 @@ class BlocRésiduelle(nn.Module):
         x = self.bloc1(x)
         x= self.bloc2(x)
 
-        return F.silu(x + self.connection(x_copie))
+        return x + self.connection(x_copie)
     
 class Encodeur(nn.Module):
 
