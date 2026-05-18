@@ -157,6 +157,7 @@ def main(batch_size = 8,
             
             return logits, perte
 
+        @torch.no_grad()
         def generate(self, idx, max_new_tokens):
             # idx is (B,T)
             for _ in range(max_new_tokens):
@@ -188,36 +189,39 @@ def main(batch_size = 8,
         def forward(self, idx, cibles= None):
             logits1 , perte1 = self.m1(idx, cibles)
             logits2 , perte2 = self.m1(idx, cibles)
-
-            if cibles is not None:
-                perte = perte1 + perte2
-            else: perte = None
-            alphas = F.softmax(self.alphas, dim = 2 )
-
+    
+            alphas = F.softmax(self.alphas, dim = 2)
             cat = torch.cat((logits1.unsqueeze(-1), logits2.unsqueeze(-1)), dim=-1)
-            
-            B, C = logits1.shape
-            tenseur_de_score = cat @ alphas.permute(0, 2, 1)
-            logits = self.lin(tenseur_de_score.view(B, vocab_size * vocab_size))
 
+            if cibles is None:
+                perte = None
+                B, T, C = logits1.shape
+                tenseur_de_score = cat @ alphas.unsqueeze(0).permute(0,1, 3, 2)
             
-            if cibles is not None:
+                
+                logits = self.lin(tenseur_de_score.view(B * T, vocab_size * vocab_size))
+                logits = logits.view(B,T,C)
+            else: 
+                perte = perte1 + perte2
+            
+                tenseur_de_score = cat @ alphas.permute(0, 2, 1)
+                logits = self.lin(tenseur_de_score.view(-1, vocab_size * vocab_size))
+                
                 cibles = cibles.view(-1)
                 perte += F.cross_entropy(logits, cibles)
 
-                """ B, T, C = logits.shape
-                logits = logits.view(B* T, C)
-                targets = targets.view(B * T) """            
             return logits, perte
         
+        @torch.no_grad()
         def generate(self, idx, max_new_tokens):
 
             for _ in range(max_new_tokens):
                 idx_cond = idx[:, -block_size:]
 
                 logits, _ = self(idx_cond)
-                print(logits.shape) ; exit()
+                
                 logits = logits[:, -1, :] #(B, C)
+                
 
                 probs = F.softmax(logits, dim=-1) #(B, C)
 
