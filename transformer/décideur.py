@@ -9,7 +9,7 @@ block_size = 64
 max_iters = 10000
 eval_interval = 100
 learning_rate = 7e-4
-device = 'cpu'
+device = 'cuda'
 eval_iters = 200
 n_embd = 64
 n_head = 4
@@ -38,17 +38,18 @@ train_data = data[:n]
 val_data = data[n:]
 
 
-def main(batch_size = 8,
-        block_size = 128,
-        max_iters = 100000,
+def main(batch_size = 64,
+        block_size = 256,
+        max_iters = 5000,
         eval_interval = 100,
-        learning_rate = 7e-4,
-        device = 'cpu',
+        learning_rate = 3e-4,
+        device = 'cuda',
         eval_iters = 200,
-        n_embd = 64,
-        n_head = 8,
+        n_embd = 128,
+        n_head = 4,
         n_layer = 2,
-        dropout = 0.15):
+        dropout = 0.2,
+        n_modèle = 2):
 
     def get_batch(split):
         data_ = train_data if split == 'train' else val_data
@@ -177,32 +178,36 @@ def main(batch_size = 8,
     
     class Décideur(nn.Module):
 
-        def __init__(self):
+        def __init__(self, n_modèles=2):
             super().__init__()
-            self.m1 = CharacterTransformer()
-            self.m2 = CharacterTransformer()
 
-            self.alphas = nn.Parameter(torch.zeros(1, vocab_size, 2))
+            self.modèles = nn.ModuleList([CharacterTransformer() for _ in range(n_modèles)])
+
+
+            self.alphas = nn.Parameter(torch.zeros(1, vocab_size, n_modèles))
 
             self.lin = nn.Sequential(nn.Linear(vocab_size*vocab_size, n_embd, bias=False), nn.LayerNorm(n_embd), nn.GELU(), nn.LayerNorm(n_embd), nn.Linear(n_embd, vocab_size, bias=False))
 
         def forward(self, idx, cibles= None):
-            logits1 , perte1 = self.m1(idx, cibles)
-            logits2 , perte2 = self.m1(idx, cibles)
-    
+            liste_logits = [] ; liste_pertes = []
+            for modèle in self.modèles:                
+                logits, perte = modèle(idx, cibles)
+                liste_logits.append(logits.unsqueeze(-1)) ; liste_pertes.append(perte)
+
             alphas = F.softmax(self.alphas, dim = 2)
-            cat = torch.cat((logits1.unsqueeze(-1), logits2.unsqueeze(-1)), dim=-1)
+            cat = torch.cat(liste_logits, dim=-1)
 
             if cibles is None:
                 perte = None
-                B, T, C = logits1.shape
-                tenseur_de_score = cat @ alphas.unsqueeze(0).permute(0,1, 3, 2)
+
+                B, T, C = liste_logits[0].squeeze(-1).shape
+                tenseur_de_score = cat @ alphas.unsqueeze(0).permute(0, 1, 3, 2)
             
                 
                 logits = self.lin(tenseur_de_score.view(B * T, vocab_size * vocab_size))
                 logits = logits.view(B,T,C)
             else: 
-                perte = perte1 + perte2
+                perte = sum(liste_pertes)
             
                 tenseur_de_score = cat @ alphas.permute(0, 2, 1)
                 logits = self.lin(tenseur_de_score.view(-1, vocab_size * vocab_size))
@@ -240,7 +245,8 @@ def main(batch_size = 8,
             losses = torch.zeros(eval_iters)
             for k in range(eval_iters):
                 X, Y = get_batch(split)
-                _, loss = model(X,Y)
+                logits, _ = model(X,Y)
+                loss = F.cross_entropy(logits, Y.view(-1))
                 losses[k] = loss.item()
             out[split] = losses.mean()
 
@@ -248,8 +254,8 @@ def main(batch_size = 8,
         return out
 
 
-    def train():
-        model = Décideur()
+    def train_décideur(n_modèle=8):
+        model = Décideur(n_modèle)
         m = model.to(device)
 
 
@@ -272,11 +278,11 @@ def main(batch_size = 8,
                 contexte = torch.zeros((1,1), dtype=torch.long, device=device)
                 print(decode(m.generate(contexte, max_new_tokens= 500)[0].tolist()))
         
-                torch.save(model.state_dict(), "transformer.pth")       
-                with open('transformer.txt', 'w') as f:
+                torch.save(model.state_dict(), "décideur_transformer.pth")       
+                with open('décideur_transformer.txt', 'w') as f:
                     f.write(repr(model))
             
-                with open('transformer.yaml', 'w') as f:
+                with open('décideur_transformer.yaml', 'w') as f:
                     config = {
                         "batch_size" : batch_size,
                         "block_size" : block_size,
@@ -291,7 +297,53 @@ def main(batch_size = 8,
                         "dropout" : dropout
                     }
                     yaml.dump(config, f)
-    train()
+    train_décideur()
 
+
+    def train_transformer():
+        model = CharacterTransformer()
+        m = model.to(device)
+
+
+        optimizer = torch.optim.AdamW(m.parameters(), lr = learning_rate)
+
+        for pas in range(max_iters):
+
+            if pas % eval_interval == 0:
+                pertes = estimation_perte(model)
+                print(f"pas {pas}: perte train {pertes['train']:.4f} perte val {pertes['val']:.4f}")
+
+            xb, yb = get_batch('train')
+
+            logits, perte = m(xb, yb)
+            optimizer.zero_grad(set_to_none=True)
+            perte.backward()
+            optimizer.step()
+
+            if (pas % 500) == 0:
+                contexte = torch.zeros((1,1), dtype=torch.long, device=device)
+                print(decode(m.generate(contexte, max_new_tokens= 500)[0].tolist()))
+        
+                torch.save(model.state_dict(), "décideur_transformer_plus_de_petits_modèles.pth")       
+                with open('décideur_transformer_plus_de_petits_modèles.txt', 'w') as f:
+                    f.write(repr(model))
+            
+                with open('décideur_transformer_plus_de_petits_modèles.yaml', 'w') as f:
+                    config = {
+                        "batch_size" : batch_size,
+                        "block_size" : block_size,
+                        "max_iters" : max_iters,
+                        "eval_interval" : eval_interval,
+                        "learning_rate" : learning_rate,
+                        "device" : device,
+                        "eval_iters" : eval_iters,
+                        "n_embd" : n_embd,
+                        "n_head" : n_head,
+                        "n_layer" : n_layer,
+                        "dropout" : dropout
+                    }
+                    yaml.dump(config, f)
+
+    train_transformer()
 if __name__ == "__main__":
     main()
