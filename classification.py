@@ -1,4 +1,3 @@
-"""Rouler fait une boucle d'entraînement de 100 époques avec le jeu de données `FashionMNIST` et un modèle Lerp linéaire de hauteur 3"""
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
@@ -7,88 +6,70 @@ from torch.utils.data import DataLoader
 
 transform = transforms.Compose([transforms.ToTensor()])
 FashionMNIST_train = datasets.FashionMNIST(root="./data", train=True, download=True, transform=transform)
-FashionMNIST_test = datasets.FashionMNIST(root="./data", train=True, download=True, transform=transform)
+FashionMNIST_test = datasets.FashionMNIST(root="./data", train=False, download=True, transform=transform)
 
 
 loader = DataLoader(FashionMNIST_train, batch_size= 512, shuffle = True)
 loader_test = DataLoader(FashionMNIST_test, batch_size= 64, shuffle = True)
         
 
-class Lerping(nn.Module):
     
-    """Prend deux `nn.Linear` et fait une combinaison convexe avec paramètre `alpha` apprenable.
-    ### Arguments
-    - m1 : Premier module
-    - m2 : Second module
-    - n : La taille de sortie des deux modules. ILS DOIVENT ÊTRE DE MÊME DIMENSIONS DE SORTIE
+class Conv(nn.Module):
     
-    ### Exemple de classe
-    ```python
-    class ModèleLerpLinéaire(nn.Module):
-        # Modèle Lerp linéaire de hauteur 1
-        def __init__(self):
-            super().__init__()
-            self.m1 = nn.Sequential(nn.Linear(784, 128), nn.LayerNorm(128), nn.SiLU())
-            self.m2 = nn.Sequential(nn.Linear(784, 128), n.LayerNorm(128), nn.SiLU())
-            self.lerp = Learping(self.c1, self.c2, 128)      
-        def forward(self, x):
-            return self.lerp(x)
-    ```
-    """
-    
-    def __init__(self, m1:nn, m2, n):
-        super().__init__()
-        self.m1 = m1
-        self.m2 = m2
-        self.alpha = nn.Parameter(torch.zeros(1, n))
-
-    def forward(self, x):
-        w = self.alpha.sigmoid()
-        return self.m1(x) * (1 - w) + self.m2(x) * w
-  
-  
-class BlocLerpLinéaire(nn.Module):
-    """ Lerp deux modules `nn.Linear`
-    ### Arguments
-    - n_in : Nombre de dimension d'entré
-    - n_out : Nombre de dimension de sortie
-    """
-    def __init__(self, n_in, n_out):
-        super().__init__()
-
-        self.c1 = nn.Sequential(nn.Linear(n_in, n_out), nn.LayerNorm(n_out), nn.SiLU())
-        self.c2 = nn.Sequential(nn.Linear(n_in, n_out), nn.LayerNorm(n_out), nn.SiLU())
-        self.lerp = Lerping(self.c1, self.c2, n_out) 
+    def __init__(self, c_in, c_out):
+        super().__init__() 
+        assert c_out % 4 == 0
+        c = c_out // 4
         
-    def forward(self, x):
-        return self.lerp(x)
-         
+        self.conv1 = nn.Conv2d(c_in, c * 2, 3, 1, 1)   
+        self.conv2 = nn.Conv2d(c_in, c, 5, 1, 2)   
+        self.conv3 = nn.Conv2d(c_in, c, 7, 1, 3)   
+          
     
+    def forward(self, x):
+        conv1 = self.conv1(x)
+        conv2 = self.conv1(x)
+        conv3 = self.conv1(x)
+        
+        return torch.cat([conv1, conv2, conv3], dim = 1)
+    
+class BlocConv(nn.Module):
+    
+    def __init__(self, c_in, c_out):
+        super().__init__()
+        
+        self.conv = nn.Sequential(nn.GroupNorm(32, c_in), Conv(c_in, c_out), nn.SiLU(),
+                                  nn.GroupNorm(32 ,c_out), Conv(c_out, c_out), nn.SiLU())
+        
+        self.proj = nn.Identity() if c_in == c_out else nn.Conv2d(c_in, c_out, 3, 1, 1)
+    
+    def forward(self, x):
+        x_copie = self.proj(x)
+        
+        x = self.conv(x)
+        return x + x_copie
+        
+    
+class ConvDown(nn.Module):
+    
+    def __init__(self, c_in, c_out):
+        super().__init__() 
+        
+        self.conv = nn.Sequential(nn.GroupNorm(32 ,c_in), nn.Conv2d(c_in, c_out, 3, 2, 1), nn.SiLU()  )
+    
+    def forward(self, x):
+        return self.conv(x)
+
 class Modèle(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.lerp1 = BlocLerpLinéaire(784, 256)
-        self.lerp2 = BlocLerpLinéaire(784, 256)
-        
-        self.lerp3 = BlocLerpLinéaire(784, 256)
-        self.lerp4 = BlocLerpLinéaire(784, 256)
-        
-        self.lerp5 = BlocLerpLinéaire(256, 64)
-        self.lerp6 = BlocLerpLinéaire(256, 64)
-        
-        self.lerp_out = BlocLerpLinéaire(64, 10)
-
+        self.net = nn.Sequential(nn.Conv2d(1, 32, 3, 1 , 1), BlocConv(32, 32), BlocConv(32, 64),  ConvDown(64, 64) , BlocConv(64, 64),
+                 BlocConv(64, 128), ConvDown(128, 128), BlocConv(128, 128), nn.Flatten(), nn.Linear(128 * 49, 128), nn.Linear(128, 10))
 
     def forward(self, x):
-        x = x.flatten(start_dim=1) 
-        x1 = self.lerp1(x)
-        x2 = self.lerp2(x)
-        x3 = self.lerp3(x)
-        x4 = self.lerp4(x)
-        x5 = self.lerp5(x1 + x2)
-        x6 = self.lerp6(x3 + x4)        
-        return self.lerp_out(x5 + x6)
+              
+        return self.net(x)
     
 
 from tqdm import tqdm
