@@ -13,63 +13,19 @@ loader = DataLoader(FashionMNIST_train, batch_size= 512, shuffle = True)
 loader_test = DataLoader(FashionMNIST_test, batch_size= 64, shuffle = True)
         
 
-    
-class Conv(nn.Module):
-    
-    def __init__(self, c_in, c_out):
-        super().__init__() 
-        assert c_out % 4 == 0
-        c = c_out // 4
-        
-        self.conv1 = nn.Conv2d(c_in, c * 2, 3, 1, 1)   
-        self.conv2 = nn.Conv2d(c_in, c, 5, 1, 2)   
-        self.conv3 = nn.Conv2d(c_in, c, 7, 1, 3)   
-          
-    
-    def forward(self, x):
-        conv1 = self.conv1(x)
-        conv2 = self.conv1(x)
-        conv3 = self.conv1(x)
-        
-        return torch.cat([conv1, conv2, conv3], dim = 1)
-    
-class BlocConv(nn.Module):
-    
-    def __init__(self, c_in, c_out):
-        super().__init__()
-        
-        self.conv = nn.Sequential(nn.GroupNorm(32, c_in), Conv(c_in, c_out), nn.SiLU(),
-                                  nn.GroupNorm(32 ,c_out), Conv(c_out, c_out), nn.SiLU())
-        
-        self.proj = nn.Identity() if c_in == c_out else nn.Conv2d(c_in, c_out, 3, 1, 1)
-    
-    def forward(self, x):
-        x_copie = self.proj(x)
-        
-        x = self.conv(x)
-        return x + x_copie
-        
-    
-class ConvDown(nn.Module):
-    
-    def __init__(self, c_in, c_out):
-        super().__init__() 
-        
-        self.conv = nn.Sequential(nn.GroupNorm(32 ,c_in), nn.Conv2d(c_in, c_out, 3, 2, 1), nn.SiLU()  )
-    
-    def forward(self, x):
-        return self.conv(x)
-
 class Modèle(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.net = nn.Sequential(nn.Conv2d(1, 32, 3, 1 , 1), BlocConv(32, 32), BlocConv(32, 64),  ConvDown(64, 64) , BlocConv(64, 64),
-                 BlocConv(64, 128), ConvDown(128, 128), BlocConv(128, 128), nn.Flatten(), nn.Linear(128 * 49, 128), nn.Linear(128, 10))
+        self.branches = nn.ModuleList([nn.Sequential(nn.LayerNorm(784), nn.Linear(784, 256), nn.SiLU(), nn.Dropout(0.2), 
+                                                     nn.LayerNorm(256),nn.Linear(256,32), nn.Dropout(0.2)) for _ in range(32) ] )
+        
+        self.sortie = nn.Sequential(nn.Linear(32 * 32, 128), nn.LayerNorm(128), nn.GELU(), nn.Dropout(0.2), nn.Linear(128, 10))
 
     def forward(self, x):
-              
-        return self.net(x)
+        x = x.flatten()
+        branches = torch.cat([b(x) for b in self.branches], dim = 1)
+        return self.sortie(branches)
     
 
 from tqdm import tqdm
