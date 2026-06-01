@@ -1,0 +1,242 @@
+pas 100: perte train 2.4788 perte val 2.4999
+pas 200: perte train 2.4256 perte val 2.4528
+pas 300: perte train 2.3463 perte val 2.3713
+pas 400: perte train 2.2181 perte val 2.2622
+pas 500: perte train 2.0940 perte val 2.1508
+
+She le harl eal tof yat cou I's murbut Heay anted
+cent som whilllys teraw spegust: aree Ghando tho swe of abe.
+
+BRCKetcet:
+Fruroion the lache isers. kerim:
+Ind scor, seand o mes,
+Andy jor trod you in, Maik ed leavee,
+It ge theffor th ine cef foath to pend drowe oor
+Tho. hend theeep! rie hier sow, nroursens sharlls mesh
+Sode char neoun contman rese theest:
+I een swant or
+Awhices, ble ig ukeda st mo unequsste tound is worns Fourrw,
+I this heeflip, meerse fareer lorgh!
+
+Neren:
+Whit tou d beavick'd,
+pas 600: perte train 1.9906 perte val 2.0773
+pas 700: perte train 1.8928 perte val 2.0002
+pas 800: perte train 1.8208 perte val 1.9592
+pas 900: perte train 1.7439 perte val 1.8972
+pas 1000: perte train 1.6889 perte val 1.8520
+
+A CAMINIUS:
+Hark boffeorde itsh your chhabome hopur, nams, you no thee,
+That compeasst werthing to Telch the dasorce
+Tof hath feast. Him a kemited.
+
+DUCKENCEizO:
+Mast beance goood sirous yet stans.
+
+MessbertNaw a thou purt a your lanne:
+But eyour me yin and me me my latt for emind this bind;
+And nor have gring to timusely.
+siw, I s; bexecamt To grevilt;
+Fr keeeplaint your loves;
+Mingada. Whe were nothere cound defonds hone that hou.
+
+
+LLADYCUS:
+But to whay Comb spo had conjostces,
+But in was emn
+pas 1100: perte train 1.6393 perte val 1.8074
+pas 1200: perte train 1.5974 perte val 1.7723
+pas 1300: perte train 1.5587 perte val 1.7445
+pas 1400: perte train 1.5261 perte val 1.7203
+pas 1500: perte train 1.4960 perte val 1.6940
+
+He liked go too the fair forsened so, hear dubford.
+My hear 'greenes the havy thaught, the your grace!
+
+First KING EDWARD IV:
+Clan oft; I'lll seas reveretor, exet usure?
+It hope these hen, o'er single--vow
+Gall Edward bear, and hose lone,
+Her only'er and hencrioled forance, and dis
+You hereard'st capoace stewome, we cause court a
+That sill deep it commling;
+And house him cauld the leacks make the wat secronge,
+Whst thy prossibed dows atte and wand his of their Jancoul;
+Solk you the she keechard
+pas 1600: perte train 1.4778 perte val 1.6810
+pas 1700: perte train 1.4546 perte val 1.6609
+pas 1800: perte train 1.4349 perte val 1.6435
+pas 1900: perte train 1.4151 perte val 1.6266
+pas 2000: perte train 1.4022 perte val 1.6146
+
+Thus mouth, not thought fear Herbolood wob, gret raighs
+To make upon my provion.
+
+HASTINA:
+It impty is lettlemptings,
+When she valiant firtual'd up with spileak.
+
+HORTENSIO:
+And be gran here had as vanial score to blowd,
+Whever it, whom the valeier's crust to
+Becanor an she or lesent fool, if true parths!
+
+SA, courd.
+
+MENENIUS:
+There.
+
+VOLUMNIA:
+The eart thanks 't my light: then.
+
+LENTIO:
+This rockander of deith.
+
+LEONTES:
+Each! Ghom shed watchman's littife of me,
+And must begnew cousin, then te
+pas 2100: perte train 1.3804 perte val 1.6016
+pas 2200: perte train 1.3711 perte val 1.5902
+pas 2300: perte train 1.3595 perte val 1.5854
+pas 2400: perte train 1.3502 perte val 1.5759
+pas 2500: perte train 1.3326 perte val 1.5724
+
+
+GLOUCESTER:
+The shamine of the scorn'd, that sworgon;
+His exucemmerly courts; therefore friar-day
+Less exceptrengthers to proune, here then:
+Now this thou king and to phinds mine in me.
+
+BINGONTES:
+To unsandies then, and my for and is feel? Let Ansht
+Roman hope me want when what I know shall'd awardes,
+Let chall set devolourn that aggent in tilliken.
+For of the govert forewicate; but for I occease a
+Angelo, gentle; and and one shall death,
+And now contencentent; of thou woundden!
+Yet all wheepi
+pas 2600: perte train 1.3223 perte val 1.5554
+pas 2700: perte train 1.3086 perte val 1.5467
+pas 2800: perte train 1.3027 perte val 1.5442
+pas 2900: perte train 1.2918 perte val 1.5395
+pas 3000: perte train 1.2831 perte val 1.5230
+
+Of yet your charge.
+
+KING:
+Arise God forbid-viole-hottence, if troyple
+We have rulrying of mine own shevern forth
+ensued, my dear to be I spick.
+
+KING EDWARD IV:
+Not rather be my brother mine. Want women-how
+Pooved on persuio, the requelty.
+Thing Clarence which look
+Thought murnicious no wore-heard tatchs,
+And from glow of rivior sorning and wore:
+That I pray it be too her with. Biding see
+Thour live! would dstay broug,
+Lest thought thyse that that work you slow
+For any thousages conquency misle
+pas 3100: perte train 1.2762 perte val 1.5282
+pas 3200: perte train 1.2657 perte val 1.5221
+pas 3300: perte train 1.2563 perte val 1.5195
+pas 3400: perte train 1.2545 perte val 1.5135
+pas 3500: perte train 1.2489 perte val 1.5089
+
+
+ISABELLIO:
+O, purpose you, ones, child and country
+Like rebeles a goody.
+
+EDWARD:
+Ah, he is reabord.
+
+Appose:
+Well: as vinor the highness for this,
+cher kind we can bet a hinder: will to purch you
+shakep: the sureld torn me, from his tempe underhum,
+As to Chenceforard for in death an Bester
+Likeep the voice, being
+Excelish had the presently sensen worme.'
+
+RIVERS:
+Now, broth, not some to answer:
+O the sod; but will ost it her own arm.
+
+RATIOLANUS:
+O what should yourself!
+I not know not, morrow
+pas 3600: perte train 1.2423 perte val 1.5058
+pas 3700: perte train 1.2339 perte val 1.5066
+pas 3800: perte train 1.2258 perte val 1.5019
+pas 3900: perte train 1.2201 perte val 1.5023
+pas 4000: perte train 1.2142 perte val 1.4966
+
+our theren-kery yef, I go. Yet new in post:
+How comes you are bill.
+
+LEONTES:
+It should the seems and fraise my good general.
+
+HASTINGS:
+Art child,
+Such as must though ever'd not the report will so give
+As they call but the did thee. Yet die not yourselves where
+And cannot so droop'd, I'll entreatly in it
+I' goodly need.
+
+BENVOLIO:
+She should I wear it.
+
+MENENIUS:
+No. Yet, sir, that a' better of ground?
+
+CORIOPERD:
+Yet regiment buy here then thou, and mamefule,
+What stares your victs last?
+
+WARC
+pas 4100: perte train 1.2039 perte val 1.4943
+pas 4200: perte train 1.2016 perte val 1.4916
+pas 4300: perte train 1.1963 perte val 1.4919
+pas 4400: perte train 1.1891 perte val 1.4891
+pas 4500: perte train 1.1802 perte val 1.4891
+
+Which brave dench to him upon the leon, 'fore the
+speeches out with the duke for truth,
+Who is dexplats that grawly and their cribe:
+I'ld not show me. O weeping them be,
+For my trarice, and fay did but please
+And the duket before the Cstesby?
+
+TABELLO:
+We it in this, thou thind make thy hand!
+But four that heavy Edward day's knees hold!
+And sweet Margaret Seenan-shall do cot;
+For this well, there speak, band within will be broke,
+Breaching brother speak it pensume, then it draw
+Those breast ward
+pas 4600: perte train 1.1821 perte val 1.4945
+pas 4700: perte train 1.1718 perte val 1.4852
+pas 4800: perte train 1.1641 perte val 1.4867
+pas 4900: perte train 1.1627 perte val 1.4891
+pas 5000: perte train 1.1521 perte val 1.4950
+
+
+KING RICHARD III:
+None, on no.' faremy, for bite,
+O, my father, for affairs he mine;
+And she must have the easter's face.
+
+BUCKINGHAM:
+Plash, to help the heavens with histown!
+Thou please of this allow believe
+And himself, the breathing become monsters
+His slowerss sworn citizens, they beseeching:
+Her h'Zounds shall not do rise to request,
+Thou latest, he comes to shame with fill ser her
+Edward's shep: and hisbaness are,
+And can roubs fire and mine ear fawned whom his choice, he he
