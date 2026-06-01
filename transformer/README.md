@@ -9,4 +9,5 @@ pip install pyyaml
 ```
 ## Référence
 La vidéo Andrej sur GPT https://www.youtube.com/watch?v=kCc8FmEb1nY
+
 L'article de référence principal https://arxiv.org/pdf/1706.03762
